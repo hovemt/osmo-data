@@ -11,7 +11,7 @@ import os.path
 
 
 userdir = os.path.expanduser("~")
-
+filenames = list()
 
 headers = ['systime', 'exptime', 'status', 'A', 'B', 'F1', 'F2', 'F3',
            'F4', 'P1', 'P2', 'P3', 'C', 'T1', 'T2', 'Tband', 'Tcell',
@@ -96,10 +96,14 @@ class OsmoData(QtGui.QMainWindow): #pylint: disable-msg=R0904
     def openfile(self):
         global filenames
         #Here we will open the directory with the datafiles
-        filenames, _ = QtGui.QFileDialog.getOpenFileNames(dir=userdir)
+        filenames, _ = QtGui.QFileDialog.getOpenFileNames(dir=userdir,filter="CSV Files (*.csv)")
         fileselect = FileSelectWidget(self)
         self.setCentralWidget(fileselect)
         #self.show()
+        
+    def showMainWindow(self):
+        main_window = MainWidget(self)
+        self.setCentralWidget(main_window)
 
 class MainWidget(QtGui.QWidget): #pylint: disable-msg=R0904
     
@@ -126,21 +130,37 @@ class FileSelectWidget(QtGui.QWidget):
         super(FileSelectWidget, self).__init__(parent)
 
         label = QtGui.QLabel('\n'.join(filenames))
-
+        
+        convertbutton = QtGui.QPushButton('convert')
+        convertbutton.clicked.connect(self.convertdata)        
+        
         hbox = QtGui.QHBoxLayout()
-        hbox.addStretch(1)
         hbox.addWidget(label)
         hbox.addStretch(1)
 
+        hbox2 = QtGui.QHBoxLayout()
+        hbox2.addStretch(1)        
+        hbox2.addWidget(convertbutton)
+        
+
         vbox = QtGui.QVBoxLayout()
-        vbox.addStretch(1)
         vbox.addLayout(hbox)
         vbox.addStretch(1)
+        vbox.addLayout(hbox2)
 
         self.setLayout(vbox)
-                
-                
-            
+    
+    def convertdata(self):
+        global filenames
+        global permance
+        for file in filenames:
+            permeance.append(det_average(file))
+        
+        savefile, _ = QtGui.QFileDialog.getSaveFileName(filter="XLS Files (*.xlsx)")
+        df = pd.DataFrame(permeance, columns = ['D_k', 'Gas', 'Permeance']).sort('D_k')
+        df.to_excel(savefile,index=False)
+       
+        #TODO: give a message that it succeeded.    
 
 def main():
     
