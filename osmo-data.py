@@ -9,7 +9,6 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import os.path
 
-filedir = ''
 
 userdir = os.path.expanduser("~")
 
@@ -95,9 +94,9 @@ class OsmoData(QtGui.QMainWindow): #pylint: disable-msg=R0904
             event.ignore()
 
     def openfile(self):
-        global filedir
+        global filenames
         #Here we will open the directory with the datafiles
-        filedir = QtGui.QFileDialog.getExistingDirectory()
+        filenames, _ = QtGui.QFileDialog.getOpenFileNames(dir=userdir)
         fileselect = FileSelectWidget(self)
         self.setCentralWidget(fileselect)
         #self.show()
@@ -121,21 +120,12 @@ class MainWidget(QtGui.QWidget): #pylint: disable-msg=R0904
         self.setLayout(vbox)
         
 class FileSelectWidget(QtGui.QWidget):
-    global filedir
+    global filenames
         
     def __init__(self, parent=None):
         super(FileSelectWidget, self).__init__(parent)
-        
-        files = QtCore.QDirIterator(filedir)
-        filelist = list()
-        
-        while files.hasNext():
-            filelist.append(files.fileName())
-            files.next()
-        
-        #print(filelist)        
-        
-        label = QtGui.QLabel('\n'.join(filelist))
+
+        label = QtGui.QLabel('\n'.join(filenames))
 
         hbox = QtGui.QHBoxLayout()
         hbox.addStretch(1)
