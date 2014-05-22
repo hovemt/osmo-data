@@ -1,6 +1,6 @@
 #/usr/bin/env python3
 import sys
-from PySide import QtGui
+from PySide import QtCore, QtGui
 import matplotlib
 # Make sure that matplotlib only uses a qt4 backend
 matplotlib.use('Qt4Agg')
@@ -9,7 +9,9 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import os.path
 
-filedir = os.path.expanduser("~")
+filedir = ''
+
+userdir = os.path.expanduser("~")
 
 
 headers = ['systime', 'exptime', 'status', 'A', 'B', 'F1', 'F2', 'F3',
@@ -93,8 +95,12 @@ class OsmoData(QtGui.QMainWindow): #pylint: disable-msg=R0904
             event.ignore()
 
     def openfile(self):
+        global filedir
         #Here we will open the directory with the datafiles
-        pass
+        filedir = QtGui.QFileDialog.getExistingDirectory()
+        fileselect = FileSelectWidget(self)
+        self.setCentralWidget(fileselect)
+        #self.show()
 
 class MainWidget(QtGui.QWidget): #pylint: disable-msg=R0904
     
@@ -112,7 +118,39 @@ class MainWidget(QtGui.QWidget): #pylint: disable-msg=R0904
         vbox.addLayout(hbox)
         vbox.addStretch(1)
 
-        self.setLayout(vbox)    
+        self.setLayout(vbox)
+        
+class FileSelectWidget(QtGui.QWidget):
+    global filedir
+        
+    def __init__(self, parent=None):
+        super(FileSelectWidget, self).__init__(parent)
+        
+        files = QtCore.QDirIterator(filedir)
+        filelist = list()
+        
+        while files.hasNext():
+            filelist.append(files.fileName())
+            files.next()
+        
+        #print(filelist)        
+        
+        label = QtGui.QLabel('\n'.join(filelist))
+
+        hbox = QtGui.QHBoxLayout()
+        hbox.addStretch(1)
+        hbox.addWidget(label)
+        hbox.addStretch(1)
+
+        vbox = QtGui.QVBoxLayout()
+        vbox.addStretch(1)
+        vbox.addLayout(hbox)
+        vbox.addStretch(1)
+
+        self.setLayout(vbox)
+                
+                
+            
 
 def main():
     
