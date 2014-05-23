@@ -43,13 +43,13 @@ class OsmoData(QtGui.QMainWindow): #pylint: disable-msg=R0904
 
         #Toolbar construction
         self.toolbar = self.addToolBar('File')
-        self.toolbar.addAction(openAction)        
+        self.toolbar.addAction(openAction)
         self.toolbar.addAction(exitAction)
 
     def closeEvent(self, event):
-        
+
         reply = QtGui.QMessageBox.question(self, 'Message',
-            "Are you sure to quit?", QtGui.QMessageBox.Yes | 
+            "Are you sure to quit?", QtGui.QMessageBox.Yes |
             QtGui.QMessageBox.No, QtGui.QMessageBox.No)
 
         if reply == QtGui.QMessageBox.Yes:
@@ -60,17 +60,18 @@ class OsmoData(QtGui.QMainWindow): #pylint: disable-msg=R0904
     def openfile(self):
         global filenames
         #Here we will open the directory with the datafiles
-        filenames, _ = QtGui.QFileDialog.getOpenFileNames(dir=userdir,filter="CSV Files (*.csv)")
+        filenames, _ = QtGui.QFileDialog.getOpenFileNames(
+                        dir=userdir, filter="CSV Files (*.csv)")
         fileselect = FileSelectWidget(self)
         self.setCentralWidget(fileselect)
         #self.show()
-        
+
     def showMainWindow(self):
         main_window = MainWidget(self)
         self.setCentralWidget(main_window)
 
 class MainWidget(QtGui.QWidget): #pylint: disable-msg=R0904
-    
+
     def __init__(self, parent=None):
         super(MainWidget, self).__init__(parent)
         label = QtGui.QLabel('Open a file to start the data conversion process')
@@ -86,26 +87,25 @@ class MainWidget(QtGui.QWidget): #pylint: disable-msg=R0904
         vbox.addStretch(1)
 
         self.setLayout(vbox)
-        
+
 class FileSelectWidget(QtGui.QWidget):
     global filenames
-        
+
     def __init__(self, parent=None):
         super(FileSelectWidget, self).__init__(parent)
 
         label = QtGui.QLabel('\n'.join(filenames))
-        
+
         convertbutton = QtGui.QPushButton('convert')
-        convertbutton.clicked.connect(self.convertdata)        
-        
+        convertbutton.clicked.connect(convert)
+
         hbox = QtGui.QHBoxLayout()
         hbox.addWidget(label)
         hbox.addStretch(1)
 
         hbox2 = QtGui.QHBoxLayout()
-        hbox2.addStretch(1)        
+        hbox2.addStretch(1)
         hbox2.addWidget(convertbutton)
-        
 
         vbox = QtGui.QVBoxLayout()
         vbox.addLayout(hbox)
@@ -113,18 +113,18 @@ class FileSelectWidget(QtGui.QWidget):
         vbox.addLayout(hbox2)
 
         self.setLayout(vbox)
-    
-    def convertdata(self):
-        global filenames
-        global permance
-        for file in filenames:
-            permeance.append(convertdata.det_average(file))
-        
-        savefile, _ = QtGui.QFileDialog.getSaveFileName(filter="XLS Files (*.xlsx)")
-        df = pd.DataFrame(permeance, columns = ['D_k', 'Gas', 'Permeance']).sort('D_k')
-        df.to_excel(savefile,index=False)
-       
-        #TODO: give a message that it succeeded.    
+
+def convert():
+    global filenames
+    global permance
+    for file in filenames:
+        permeance.append(convertdata.det_average(file))
+    savefile, _ = QtGui.QFileDialog.getSaveFileName(filter="XLS Files (*.xlsx)")
+    df = pd.DataFrame(permeance, 
+                      columns=['D_k', 'Gas', 'Permeance']).sort('D_k')
+    df.to_excel(savefile, index=False)
+
+#TODO: give a message that it succeeded.    
 
 def main():
     
