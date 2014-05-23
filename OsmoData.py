@@ -1,6 +1,6 @@
 #/usr/bin/env python3
 import sys
-from PySide import QtCore, QtGui
+from PySide import QtGui
 #import matplotlib
 # Make sure that matplotlib only uses a qt4 backend
 #matplotlib.use('Qt4Agg')
@@ -8,12 +8,11 @@ from PySide import QtCore, QtGui
 #import matplotlib.pyplot as plt
 import pandas as pd
 import os.path
-import convertdata
+import ConvertData
 
 
 userdir = os.path.expanduser("~")
 filenames = list()
-
 permeance = list()
 
 class OsmoData(QtGui.QMainWindow): #pylint: disable-msg=R0904
@@ -64,11 +63,7 @@ class OsmoData(QtGui.QMainWindow): #pylint: disable-msg=R0904
                         dir=userdir, filter="CSV Files (*.csv)")
         fileselect = FileSelectWidget(self)
         self.setCentralWidget(fileselect)
-        #self.show()
 
-    def showMainWindow(self):
-        main_window = MainWidget(self)
-        self.setCentralWidget(main_window)
 
 class MainWidget(QtGui.QWidget): #pylint: disable-msg=R0904
 
@@ -88,7 +83,7 @@ class MainWidget(QtGui.QWidget): #pylint: disable-msg=R0904
 
         self.setLayout(vbox)
 
-class FileSelectWidget(QtGui.QWidget):
+class FileSelectWidget(QtGui.QWidget): #pylint: disable-msg=R0904
     global filenames
 
     def __init__(self, parent=None):
@@ -117,17 +112,18 @@ class FileSelectWidget(QtGui.QWidget):
 def convert():
     global filenames
     global permance
+    global ex
     for file in filenames:
-        permeance.append(convertdata.det_average(file))
+        permeance.append(ConvertData.det_average(file))
     savefile, _ = QtGui.QFileDialog.getSaveFileName(filter="XLS Files (*.xlsx)")
-    df = pd.DataFrame(permeance, 
+    df = pd.DataFrame(permeance,
                       columns=['D_k', 'Gas', 'Permeance']).sort('D_k')
     df.to_excel(savefile, index=False)
-
-#TODO: give a message that it succeeded.    
+    mainmenu = MainWidget()
+    ex.setCentralWidget(mainmenu)
 
 def main():
-    
+    global ex
     app = QtGui.QApplication(sys.argv)
     ex = OsmoData()
     sys.exit(app.exec_())
@@ -135,26 +131,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
-    
-#==============================================================================
-# This is the old code that was used for functionality
-#    
-#    app = QApplication(sys.argv)
-# #TODO write gui to open files
-# 
-# filenames, _filter = QFileDialog.getOpenFileNames(filter="CSV Files (*.csv)")
-# 
-# for filename in filenames:
-#        permeance.append(det_average(filename))
-#     
-# 
-# savefile, _filter = QFileDialog.getSaveFileName(filter="XLS Files (*.xlsx)")
-# df = pd.DataFrame(permeance, columns = ['D_k', 'Gas', 'Permeance']).sort('D_k')
-# #df.to_csv(savefile)
-# df.to_excel(savefile,index=False)
-# app.exit()
-#==============================================================================
-
-

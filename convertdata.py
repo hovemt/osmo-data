@@ -37,7 +37,6 @@ def det_average(fname):
     return dk, gas, average*1E-9
 
 
-#TODO create aray with filename and gas based on a selectable window
 def find_gas(fname):
     if '__002' in fname:
         dk, gas = 2.6, 'Helium'
@@ -56,14 +55,16 @@ def find_gas(fname):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    filenames, _filter = QFileDialog.getOpenFileNames(filter="CSV Files (*.csv)")
- 
+    filenames, _filter = QFileDialog.getOpenFileNames(
+                            filter="CSV Files (*.csv)")
+
     for filename in filenames:
         permeance.append(det_average(filename))
-     
- 
-    savefile, _filter = QFileDialog.getSaveFileName(filter="XLS Files (*.xlsx)")
-    df = pd.DataFrame(permeance, columns = ['D_k', 'Gas', 'Permeance']).sort('D_k')
+
+    savefile, _filter = QFileDialog.getSaveFileName(
+                        filter="XLS Files (*.xlsx)")
+    df = pd.DataFrame(permeance, 
+                      columns=['D_k', 'Gas', 'Permeance']).sort('D_k')
     #df.to_csv(savefile)
     df.to_excel(savefile,index=False)
     app.exit()
