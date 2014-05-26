@@ -92,14 +92,13 @@ class FileSelectWidget(QtGui.QWidget): #pylint: disable-msg=R0904
         convertbutton = QtGui.QPushButton('convert')
         convertbutton.clicked.connect(convert)
         
-        self.buttons = []        
+        self.buttons = []
+        self.gases = []        
         
-        self.headerlines = QtGui.QHBoxLayout()
-        self.headerlines.addWidget(QtGui.QLabel("Exclude?"))
-        self.headerlines.addWidget(QtGui.QLabel("Filename"))          
-        
-        self.filebox = QtGui.QVBoxLayout()
-        self.filebox.addLayout(self.headerlines)
+        self.filebox = QtGui.QGridLayout()
+        self.filebox.addWidget(QtGui.QLabel("Exclude?"),0,0)
+        self.filebox.addWidget(QtGui.QLabel("Filename"),0,1)
+        self.filebox.addWidget(QtGui.QLabel("Gas"),0,2)
 
         self.hbox = QtGui.QHBoxLayout()
         self.hbox.addLayout(self.filebox)
@@ -116,20 +115,22 @@ class FileSelectWidget(QtGui.QWidget): #pylint: disable-msg=R0904
         for i in filenames:
             self.AddWidget(i)
         
-        
-        
         self.setLayout(self.vbox)
         
     def AddWidget(self,filename):
+        row = self.filebox.rowCount()
         checkbox = QtGui.QCheckBox()
         self.buttons.append(checkbox)
         lineedit = QtGui.QLineEdit(QtCore.QFileInfo(filename).baseName())
+        gasselect = QtGui.QComboBox()
+        gasselect.addItems(["Helium","Nitrogen","Methane","Hydrogen","Carbon dioxide"])
         
-        line = QtGui.QHBoxLayout()
-        line.addWidget(checkbox)
-        line.addWidget(lineedit)
+        #line = QtGui.QHBoxLayout()
+        self.filebox.addWidget(checkbox, row, 0)
+        self.filebox.addWidget(lineedit, row, 1)
+        self.filebox.addWidget(gasselect, row, 2)
         
-        self.filebox.addLayout(line)
+        #self.filebox.addLayout(line)
 
 def convert():
     global filenames
