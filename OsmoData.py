@@ -1,6 +1,6 @@
 #/usr/bin/env python3
 import sys
-from PySide import QtGui
+from PySide import QtCore, QtGui
 #import matplotlib
 # Make sure that matplotlib only uses a qt4 backend
 #matplotlib.use('Qt4Agg')
@@ -87,27 +87,49 @@ class FileSelectWidget(QtGui.QWidget): #pylint: disable-msg=R0904
     global filenames
 
     def __init__(self, parent=None):
-        super(FileSelectWidget, self).__init__(parent)
-
-        label = QtGui.QLabel('\n'.join(filenames))
+        super(FileSelectWidget, self).__init__()
 
         convertbutton = QtGui.QPushButton('convert')
         convertbutton.clicked.connect(convert)
+        
+        self.buttons = []        
+        
+        self.headerlines = QtGui.QHBoxLayout()
+        self.headerlines.addWidget(QtGui.QLabel("Exclude?"))
+        self.headerlines.addWidget(QtGui.QLabel("Filename"))          
+        
+        self.filebox = QtGui.QVBoxLayout()
+        self.filebox.addLayout(self.headerlines)
 
-        hbox = QtGui.QHBoxLayout()
-        hbox.addWidget(label)
-        hbox.addStretch(1)
+        self.hbox = QtGui.QHBoxLayout()
+        self.hbox.addLayout(self.filebox)
 
-        hbox2 = QtGui.QHBoxLayout()
-        hbox2.addStretch(1)
-        hbox2.addWidget(convertbutton)
+        self.hbox2 = QtGui.QHBoxLayout()
+        self.hbox2.addStretch(1)
+        self.hbox2.addWidget(convertbutton)
 
-        vbox = QtGui.QVBoxLayout()
-        vbox.addLayout(hbox)
-        vbox.addStretch(1)
-        vbox.addLayout(hbox2)
-
-        self.setLayout(vbox)
+        self.vbox = QtGui.QVBoxLayout()
+        self.vbox.addLayout(self.hbox)
+        self.vbox.addStretch(1)
+        self.vbox.addLayout(self.hbox2)
+        
+        for i in filenames:
+            self.AddWidget(i)
+        
+        
+        
+        self.setLayout(self.vbox)
+        
+    def AddWidget(self,filename):
+        checkbox = QtGui.QCheckBox()
+        self.buttons.append(checkbox)
+        lineedit = QtGui.QLineEdit(QtCore.QFileInfo(filename).baseName())
+        
+        line = QtGui.QHBoxLayout()
+        line.addWidget(checkbox)
+        line.addWidget(lineedit)
+        
+        self.filebox.addLayout(line)
 
 def convert():
     global filenames
