@@ -6,10 +6,10 @@ Created on Thu May 22 15:41:32 2014
 """
 import sys
 from PySide.QtGui import QApplication, QFileDialog
-#import matplotlib
+import matplotlib
 ## Make sure that matplotlib only uses a qt4 backend
-#matplotlib.use('Qt4Agg')
-#matplotlib.rcParams['backend.qt4'] = 'PySide'
+matplotlib.use('Qt4Agg')
+matplotlib.rcParams['backend.qt4'] = 'PySide'
 import matplotlib.pyplot as plt
 import pandas as pd
 #import os.path
@@ -62,9 +62,9 @@ if __name__ == '__main__':
         permeance.append(det_average(filename))
 
     savefile, _filter = QFileDialog.getSaveFileName(
-                        filter="XLS Files (*.xlsx)")
+                        filter="CSV Files (*.csv)")
     df = pd.DataFrame(permeance, 
                       columns=['D_k', 'Gas', 'Permeance']).sort('D_k')
     #df.to_csv(savefile)
-    df.to_excel(savefile,index=False)
+    df.to_csv(savefile, index=False, sep=";")
     app.exit()

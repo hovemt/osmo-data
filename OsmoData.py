@@ -115,10 +115,10 @@ def convert():
     global ex
     for file in filenames:
         permeance.append(ConvertData.det_average(file))
-    savefile, _ = QtGui.QFileDialog.getSaveFileName(filter="XLS Files (*.xlsx)")
+    savefile, _ = QtGui.QFileDialog.getSaveFileName(filter="CSV Files (*.csv)")
     df = pd.DataFrame(permeance,
                       columns=['D_k', 'Gas', 'Permeance']).sort('D_k')
-    df.to_excel(savefile, index=False)
+    df.to_csv(savefile, index=False, sep=";")
     mainmenu = MainWidget()
     ex.setCentralWidget(mainmenu)
 
