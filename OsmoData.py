@@ -14,6 +14,7 @@ import ConvertData
 userdir = os.path.expanduser("~")
 filenames = list()
 permeance = list()
+filewidget = [] 
 
 class OsmoData(QtGui.QMainWindow): #pylint: disable-msg=R0904
 
@@ -85,6 +86,7 @@ class MainWidget(QtGui.QWidget): #pylint: disable-msg=R0904
 
 class FileSelectWidget(QtGui.QWidget): #pylint: disable-msg=R0904
     global filenames
+    global filewidget
 
     def __init__(self, parent=None):
         super(FileSelectWidget, self).__init__()
@@ -92,8 +94,7 @@ class FileSelectWidget(QtGui.QWidget): #pylint: disable-msg=R0904
         convertbutton = QtGui.QPushButton('convert')
         convertbutton.clicked.connect(convert)
         
-        self.buttons = []
-        self.gases = []        
+               
         
         self.filebox = QtGui.QGridLayout()
         self.filebox.addWidget(QtGui.QLabel("Exclude?"),0,0)
@@ -114,18 +115,21 @@ class FileSelectWidget(QtGui.QWidget): #pylint: disable-msg=R0904
         
         for i in filenames:
             self.AddWidget(i)
-        
+            
         self.setLayout(self.vbox)
         
     def AddWidget(self,filename):
         row = self.filebox.rowCount()
         checkbox = QtGui.QCheckBox()
         checkbox.setEnabled(False) #For now disabled, need to look to connect
-        self.buttons.append(checkbox)
-        lineedit = QtGui.QLineEdit(QtCore.QFileInfo(filename).baseName())
+        
+        #lineedit = QtGui.QLineEdit(QtCore.QFileInfo(filename).baseName())
+        lineedit = QtGui.QLineEdit(filename)
         gasselect = QtGui.QComboBox()
         gasselect.addItems(["Helium","Nitrogen","Methane","Hydrogen","Carbon dioxide"])
         gasselect.setEnabled(False) #For now disabled, need to look to connect
+        
+        filewidget.append([checkbox, lineedit, gasselect])
         #line = QtGui.QHBoxLayout()
         self.filebox.addWidget(checkbox, row, 0)
         self.filebox.addWidget(lineedit, row, 1)
@@ -137,6 +141,13 @@ def convert():
     global filenames
     global permance
     global ex
+        
+    #Diagnostic printing
+    for i in range(len(filewidget)):
+        print(filewidget[i][0].isChecked())
+        print(filewidget[i][1].text())
+        print(filewidget[i][2].currentText())
+    
     for file in filenames:
         permeance.append(ConvertData.det_average(file))
     savefile, _ = QtGui.QFileDialog.getSaveFileName(filter="CSV Files (*.csv)")
