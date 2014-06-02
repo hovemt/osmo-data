@@ -22,7 +22,7 @@ class OsmoData(QtGui.QMainWindow): #pylint: disable-msg=R0904
         self.createToolbar()
         main_window = MainWidget(self)
 
-        self.setGeometry(300, 300, 250, 150)
+        self.setGeometry(300, 300, 500, 150)
         self.setWindowTitle('OsmoData Converter')
         self.setCentralWidget(main_window)
         self.show()
@@ -120,11 +120,12 @@ class FileSelectWidget(QtGui.QWidget): #pylint: disable-msg=R0904
     def AddWidget(self,filename):
         row = self.filebox.rowCount()
         checkbox = QtGui.QCheckBox()
+        checkbox.setEnabled(False) #For now disabled, need to look to connect
         self.buttons.append(checkbox)
         lineedit = QtGui.QLineEdit(QtCore.QFileInfo(filename).baseName())
         gasselect = QtGui.QComboBox()
         gasselect.addItems(["Helium","Nitrogen","Methane","Hydrogen","Carbon dioxide"])
-        
+        gasselect.setEnabled(False) #For now disabled, need to look to connect
         #line = QtGui.QHBoxLayout()
         self.filebox.addWidget(checkbox, row, 0)
         self.filebox.addWidget(lineedit, row, 1)
@@ -142,6 +143,7 @@ def convert():
     df = pd.DataFrame(permeance,
                       columns=['D_k', 'Gas', 'Permeance']).sort('D_k')
     df.to_csv(savefile, index=False, sep=";")
+    #Change back to main window after conversion
     mainmenu = MainWidget()
     ex.setCentralWidget(mainmenu)
 
