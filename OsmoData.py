@@ -26,17 +26,18 @@ class OsmoData(QtGui.QMainWindow): #pylint: disable-msg=R0904
 
         self.setGeometry(300, 300, 500, 150)
         self.setWindowTitle('OsmoData Converter')
+        self.setWindowIcon(QtGui.QIcon('images/osmo.png'))
         self.setCentralWidget(main_window)
         self.show()
 
     def createToolbar(self):
-        openAction = QtGui.QAction(QtGui.QIcon('images/file/fileopen.png'),
+        openAction = QtGui.QAction(QtGui.QIcon('images/document-open.png'),
                                    'Open', self)
         openAction.setShortcut('Ctrl+O')
         openAction.setStatusTip('Open datafiles')
         openAction.triggered.connect(self.openfile)
 
-        exitAction = QtGui.QAction(QtGui.QIcon('images/actions/exit.png'),
+        exitAction = QtGui.QAction(QtGui.QIcon('images/application-exit.png'),
                                    'Exit', self)
         exitAction.setShortcut('Ctrl+Q')
         exitAction.setStatusTip('Exit application')
