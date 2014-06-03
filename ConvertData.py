@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-Created on Thu May 22 15:41:32 2014
+ConvertData contains the code to convert the csv files from the Osmo
+Inspector software to an average permeance
 
 @author: hovem
 """
-import sys
-from PySide.QtGui import QApplication, QFileDialog
+
 import matplotlib
 ## Make sure that matplotlib only uses a qt4 backend
 matplotlib.use('Qt4Agg')
@@ -19,11 +19,14 @@ headers = ['systime', 'exptime', 'status', 'A', 'B', 'F1', 'F2', 'F3',
            'F4', 'P1', 'P2', 'P3', 'C', 'T1', 'T2', 'Tband', 'Tcell',
            'Pdiff', 'Fcorr', 'Perm', 'D', 'P2hold', 'P2frac',
            'Thold', 'Fraw', 'E', 'F', 'G', 'H', 'I']
+           
+gases = ["Helium", "Nitrogen", "Methane", "Hydrogen", "Carbon dioxide"]
+dk_sizes = [2.6, 3.64, 3.8, 2.89, 3.3]           
 
-permeance = []
 
-def det_average(fname):
-    dk, gas = find_gas(fname)
+
+def det_average(fname, gas):
+    dk = dk_sizes[gases.index(gas)]
     data = pd.read_csv(fname, delimiter='\t', header=0, names=headers)
     datacrop = data[data.status == "Measuring"]
     datacrop['Perm'].plot()
@@ -37,34 +40,6 @@ def det_average(fname):
     return dk, gas, average*1E-9
 
 
-def find_gas(fname):
-    if '__002' in fname:
-        dk, gas = 2.6, 'Helium'
-    elif '__003' in fname:
-        dk, gas = 3.64, 'Nitrogen'
-    elif '__004' in fname:
-        dk, gas = 3.8, 'Methane'
-    elif '__005' in fname:
-        dk, gas = 2.89, 'Hydrogen'
-    elif '__006' in fname:
-        dk, gas = 3.3, 'Carbon dioxide'
-    else:
-        dk, gas = None, 'Other'
-    return dk, gas
-
-
 if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    filenames, _filter = QFileDialog.getOpenFileNames(
-                            filter="CSV Files (*.csv)")
-
-    for filename in filenames:
-        permeance.append(det_average(filename))
-
-    savefile, _filter = QFileDialog.getSaveFileName(
-                        filter="CSV Files (*.csv)")
-    df = pd.DataFrame(permeance, 
-                      columns=['D_k', 'Gas', 'Permeance']).sort('D_k')
-    #df.to_csv(savefile)
-    df.to_csv(savefile, index=False, sep=";")
-    app.exit()
+    print("""This script is for the data-handling of OsmoData and cannot be
+            used as a standalone script""")

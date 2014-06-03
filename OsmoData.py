@@ -1,11 +1,12 @@
-#/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+OsmoData is a tool to convert a number of files to a single csv files with
+the average permeance per gas
+
+@author: hovem
+"""
 import sys
-from PySide import QtCore, QtGui
-#import matplotlib
-# Make sure that matplotlib only uses a qt4 backend
-#matplotlib.use('Qt4Agg')
-#matplotlib.rcParams['backend.qt4'] = 'PySide'
-#import matplotlib.pyplot as plt
+from PySide import QtGui
 import pandas as pd
 import os.path
 import ConvertData
@@ -93,13 +94,10 @@ class FileSelectWidget(QtGui.QWidget): #pylint: disable-msg=R0904
 
         convertbutton = QtGui.QPushButton('convert')
         convertbutton.clicked.connect(convert)
-        
-               
-        
+
         self.filebox = QtGui.QGridLayout()
-        self.filebox.addWidget(QtGui.QLabel("Exclude?"),0,0)
-        self.filebox.addWidget(QtGui.QLabel("Filename"),0,1)
-        self.filebox.addWidget(QtGui.QLabel("Gas"),0,2)
+        self.filebox.addWidget(QtGui.QLabel("Filename"),0,0)
+        self.filebox.addWidget(QtGui.QLabel("Gas"),0,1)
 
         self.hbox = QtGui.QHBoxLayout()
         self.hbox.addLayout(self.filebox)
@@ -120,37 +118,33 @@ class FileSelectWidget(QtGui.QWidget): #pylint: disable-msg=R0904
         
     def AddWidget(self,filename):
         row = self.filebox.rowCount()
-        checkbox = QtGui.QCheckBox()
-        checkbox.setEnabled(False) #For now disabled, need to look to connect
         
-        #lineedit = QtGui.QLineEdit(QtCore.QFileInfo(filename).baseName())
         lineedit = QtGui.QLineEdit(filename)
+        
         gasselect = QtGui.QComboBox()
-        gasselect.addItems(["Helium","Nitrogen","Methane","Hydrogen","Carbon dioxide"])
-        gasselect.setEnabled(False) #For now disabled, need to look to connect
+        gasselect.addItems(["---","Helium","Nitrogen","Methane","Hydrogen","Carbon dioxide"])
         
-        filewidget.append([checkbox, lineedit, gasselect])
-        #line = QtGui.QHBoxLayout()
-        self.filebox.addWidget(checkbox, row, 0)
-        self.filebox.addWidget(lineedit, row, 1)
-        self.filebox.addWidget(gasselect, row, 2)
+        if filename.find('__') >= 0:
+            index = int(filename[filename.rfind('.')-1])-1
+            gasselect.setCurrentIndex(index)
         
-        #self.filebox.addLayout(line)
+        filewidget.append([lineedit, gasselect])
+        self.filebox.addWidget(lineedit, row, 0)
+        self.filebox.addWidget(gasselect, row, 1)
 
 def convert():
     global filenames
     global permance
     global ex
+
+    for item in filewidget:
+        if item[1].currentText() == '---':
+            pass
+        else:
+            permeance.append(ConvertData.det_average(item[0].text(), item[1].currentText()))
         
-    #Diagnostic printing
-    for i in range(len(filewidget)):
-        print(filewidget[i][0].isChecked())
-        print(filewidget[i][1].text())
-        print(filewidget[i][2].currentText())
-    
-    for file in filenames:
-        permeance.append(ConvertData.det_average(file))
-    savefile, _ = QtGui.QFileDialog.getSaveFileName(filter="CSV Files (*.csv)")
+    savefile, _ = QtGui.QFileDialog.getSaveFileName(filter="CSV Files (*.csv)",
+                                                    dir=os.path.dirname(filenames[0]))
     df = pd.DataFrame(permeance,
                       columns=['D_k', 'Gas', 'Permeance']).sort('D_k')
     df.to_csv(savefile, index=False, sep=";")
