@@ -12,32 +12,37 @@ matplotlib.use('Qt4Agg')
 matplotlib.rcParams['backend.qt4'] = 'PySide'
 import matplotlib.pyplot as plt
 import pandas as pd
-#import os.path
 
 
-headers = ['systime', 'exptime', 'status', 'A', 'B', 'F1', 'F2', 'F3',
+HEADERS = ['systime', 'exptime', 'status', 'A', 'B', 'F1', 'F2', 'F3',
            'F4', 'P1', 'P2', 'P3', 'C', 'T1', 'T2', 'Tband', 'Tcell',
            'Pdiff', 'Fcorr', 'Perm', 'D', 'P2hold', 'P2frac',
            'Thold', 'Fraw', 'E', 'F', 'G', 'H', 'I']
-           
-gases = ["Helium", "Nitrogen", "Methane", "Hydrogen", "Carbon dioxide"]
-dk_sizes = [2.6, 3.64, 3.8, 2.89, 3.3]           
+
+GASES = ["Helium", "Nitrogen", "Methane", "Hydrogen", "Carbon dioxide"]
+SIZES = [2.6, 3.64, 3.8, 2.89, 3.3]
 
 
 
 def det_average(fname, gas):
-    dk = dk_sizes[gases.index(gas)]
-    data = pd.read_csv(fname, delimiter='\t', header=0, names=headers)
-    datacrop = data[data.status == "Measuring"]
+    """"
+    This function plots permeance vs time to determine the average permeance
+    """
+    diameter = SIZES[GASES.index(gas)]
+    data = pd.read_csv(fname, delimiter='\t', header=0, names=HEADERS)
+    datacrop = data[data.status == "Measuring"] #pylint: disable-msg=E1103
     datacrop['Perm'].plot()
     values = plt.ginput(2)
-    (x1, y1), (x2, y2) = values
 
-    x1 = int(x1.round())
-    x2 = int(x2.round())
-    average = datacrop['Perm'].loc[x1:x2].mean()
+    xlow = values[0][0]
+    xhigh = values[1][0]
+    #(xlow, ylow), (xhigh, yhigh) = values
+
+    xlow = int(xlow.round())
+    xhigh = int(xhigh.round())
+    average = datacrop['Perm'].loc[xlow:xhigh].mean()
     plt.close()
-    return dk, gas, average*1E-9
+    return diameter, gas, average*1E-9
 
 
 if __name__ == '__main__':
