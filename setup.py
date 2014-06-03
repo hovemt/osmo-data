@@ -12,7 +12,9 @@ buildOptions = dict(packages = ["matplotlib.backends.backend_qt4agg"],
 								],
 					include_files = [
 									#(matplotlib.get_data_path(),"mpl-data"),
-									("images","images")]
+									("images","images")],
+					optimize = 2,
+					compressed = True
 					)
 
 
