@@ -12,7 +12,8 @@ matplotlib.use('Qt4Agg')
 matplotlib.rcParams['backend.qt4'] = 'PySide'
 import matplotlib.pyplot as plt
 import pandas as pd
-
+import warnings
+warnings.simplefilter("ignore")
 
 HEADERS = ['systime', 'exptime', 'status', 'A', 'B', 'F1', 'F2', 'F3',
            'F4', 'P1', 'P2', 'P3', 'C', 'T1', 'T2', 'Tband', 'Tcell',
