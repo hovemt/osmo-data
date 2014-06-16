@@ -21,7 +21,7 @@ buildOptions = dict(packages = ["matplotlib.backends.backend_qt4agg"],
 base = 'Win32GUI' if sys.platform=='win32' else None
 
 executables = [
-    Executable('OsmoData.py', base=base)
+    Executable('OsmoData.pyw', base=base)
 ]
 
 setup(name='OsmoData',
