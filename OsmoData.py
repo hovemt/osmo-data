@@ -114,7 +114,7 @@ class FileSelectWidget(QtGui.QWidget): #pylint: disable-msg=R0904
         
         for i in filenames:
             self.AddWidget(i)
-            
+
         self.setLayout(self.vbox)
         
     def AddWidget(self,filename):
@@ -137,6 +137,7 @@ def convert():
     global filenames
     global permance
     global ex
+    global filewidget
 
     for item in filewidget:
         if item[1].currentText() == '---':
@@ -151,6 +152,7 @@ def convert():
     df.to_csv(savefile, index=False, sep=";")
     #Change back to main window after conversion
     mainmenu = MainWidget()
+    filewidget = []     # Make sure we can do a second run
     ex.setCentralWidget(mainmenu)
 
 def main():
