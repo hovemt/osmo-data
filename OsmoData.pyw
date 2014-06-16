@@ -14,7 +14,7 @@ import ConvertData
 
 userdir = os.path.expanduser("~")
 filenames = list()
-permeance = list()
+#permeance = []
 filewidget = [] 
 
 class OsmoData(QtGui.QMainWindow): #pylint: disable-msg=R0904
@@ -135,9 +135,9 @@ class FileSelectWidget(QtGui.QWidget): #pylint: disable-msg=R0904
 
 def convert():
     global filenames
-    global permance
     global ex
     global filewidget
+    permeance = []
 
     for item in filewidget:
         if item[1].currentText() == '---':
@@ -152,7 +152,8 @@ def convert():
     df.to_csv(savefile, index=False, sep=";")
     #Change back to main window after conversion
     mainmenu = MainWidget()
-    filewidget = []     # Make sure we can do a second run
+    filewidget = [] # Make sure we can do a second run
+    #permeance = []     
     ex.setCentralWidget(mainmenu)
 
 def main():
