@@ -148,7 +148,7 @@ def convert():
     savefile, _ = QtGui.QFileDialog.getSaveFileName(filter="CSV Files (*.csv)",
                                                     dir=os.path.dirname(filenames[0]))
     df = pd.DataFrame(permeance,
-                      columns=['D_k', 'Gas', 'Permeance']).sort('D_k')
+                      columns=['D_k', 'Gas', 'Permeance (mol m-2 s-1 Pa-1)', 'Temp (C)', 'Flow (ml/min) AIR', 'Pdiff (bar)']).sort('D_k')
     df.to_csv(savefile, index=False, sep=";")
     #Change back to main window after conversion
     mainmenu = MainWidget()

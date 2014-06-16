@@ -42,8 +42,11 @@ def det_average(fname, gas):
     xlow = int(xlow.round())
     xhigh = int(xhigh.round())
     average = datacrop['Perm'].loc[xlow:xhigh].mean()
+    temp = datacrop['Tcell'].loc[xlow:xhigh].mean()
+    flow = datacrop['Fraw'].loc[xlow:xhigh].mean()
+    pdiff = datacrop['Pdiff'].loc[xlow:xhigh].mean()
     plt.close()
-    return diameter, gas, average*1E-9
+    return diameter, gas, average*1E-9, temp, flow, pdiff
 
 
 if __name__ == '__main__':
