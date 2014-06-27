@@ -92,30 +92,39 @@ class FileSelectWidget(QtGui.QWidget): #pylint: disable-msg=R0904
 
     def __init__(self, parent=None):
         super(FileSelectWidget, self).__init__()
-
+        self.setFixedHeight(300)
+        self.setMinimumWidth(500)
         convertbutton = QtGui.QPushButton('convert')
         convertbutton.clicked.connect(convert)
+        
+        widget = QtGui.QWidget()
 
         self.filebox = QtGui.QGridLayout()
         self.filebox.addWidget(QtGui.QLabel("Filename"),0,0)
         self.filebox.addWidget(QtGui.QLabel("Gas"),0,1)
 
-        self.hbox = QtGui.QHBoxLayout()
-        self.hbox.addLayout(self.filebox)
+        #hbox = QtGui.QHBoxLayout()
+        #hbox.addLayout(self.filebox)
+        widget.setLayout(self.filebox)        
+        
+        scroll = QtGui.QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setWidget(widget)
+        
+        hbox2 = QtGui.QHBoxLayout()
+        hbox2.addStretch(1)
+        hbox2.addWidget(convertbutton)
 
-        self.hbox2 = QtGui.QHBoxLayout()
-        self.hbox2.addStretch(1)
-        self.hbox2.addWidget(convertbutton)
-
-        self.vbox = QtGui.QVBoxLayout()
-        self.vbox.addLayout(self.hbox)
-        self.vbox.addStretch(1)
-        self.vbox.addLayout(self.hbox2)
+        vbox = QtGui.QVBoxLayout()
+        #vbox.addLayout(hbox)
+        vbox.addWidget(scroll)
+        vbox.addStretch(1)
+        vbox.addLayout(hbox2)
         
         for i in filenames:
             self.AddWidget(i)
 
-        self.setLayout(self.vbox)
+        self.setLayout(vbox)
         
     def AddWidget(self,filename):
         row = self.filebox.rowCount()
@@ -126,7 +135,9 @@ class FileSelectWidget(QtGui.QWidget): #pylint: disable-msg=R0904
         gasselect.addItems(["---","Helium","Nitrogen","Methane","Hydrogen","Carbon dioxide"])
         
         if filename.find('__') >= 0:
-            index = int(filename[filename.rfind('.')-1])-1
+            num = int(filename[filename.rfind('__')+2:filename.rfind('.')])-1
+            #index = int(filename[filename.rfind('.')-1])-1
+            index = num % 6
             gasselect.setCurrentIndex(index)
         
         filewidget.append([lineedit, gasselect])
