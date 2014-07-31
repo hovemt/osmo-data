@@ -11,6 +11,7 @@ import matplotlib
 matplotlib.use('Qt4Agg')
 matplotlib.rcParams['backend.qt4'] = 'PySide'
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 import warnings
 warnings.simplefilter("ignore")
@@ -45,8 +46,9 @@ def det_average(fname, gas):
     temp = datacrop['Tcell'].loc[xlow:xhigh].mean()
     flow = datacrop['Fraw'].loc[xlow:xhigh].mean()
     pdiff = datacrop['Pdiff'].loc[xlow:xhigh].mean()
+    tband = np.round(datacrop['Tband'].loc[xlow:xhigh].mean().round())
     plt.close()
-    return diameter, gas, average*1E-9, temp, flow, pdiff
+    return diameter, gas, average*1E-9, temp, flow, pdiff, tband
 
 
 if __name__ == '__main__':
