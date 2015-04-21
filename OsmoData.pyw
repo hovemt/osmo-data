@@ -14,7 +14,6 @@ import ConvertData
 
 userdir = os.path.expanduser("~")
 filenames = list()
-#permeance = []
 filewidget = [] 
 
 class OsmoData(QtGui.QMainWindow): #pylint: disable-msg=R0904
@@ -116,7 +115,6 @@ class FileSelectWidget(QtGui.QWidget): #pylint: disable-msg=R0904
         hbox2.addWidget(convertbutton)
 
         vbox = QtGui.QVBoxLayout()
-        #vbox.addLayout(hbox)
         vbox.addWidget(scroll)
         vbox.addStretch(1)
         vbox.addLayout(hbox2)
@@ -134,9 +132,9 @@ class FileSelectWidget(QtGui.QWidget): #pylint: disable-msg=R0904
         gasselect = QtGui.QComboBox()
         gasselect.addItems(["---","Helium","Nitrogen","Methane","Hydrogen","Carbon dioxide"])
         
+        #TODO: Now we check for gas based on filename, extract gas from data.
         if filename.find('__') >= 0:
             num = int(filename[filename.rfind('__')+2:filename.rfind('.')])-1
-            #index = int(filename[filename.rfind('.')-1])-1
             index = num % 6
             gasselect.setCurrentIndex(index)
         
@@ -164,7 +162,6 @@ def convert():
     #Change back to main window after conversion
     mainmenu = MainWidget()
     filewidget = [] # Make sure we can do a second run
-    #permeance = []     
     ex.setCentralWidget(mainmenu)
 
 def main():
