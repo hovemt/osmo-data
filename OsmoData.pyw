@@ -6,7 +6,8 @@ the average permeance per gas
 @author: hovem
 """
 import sys
-from PySide import QtGui
+# from PySide import QtGui
+from PyQt4 import QtGui
 import pandas as pd
 import os.path
 import ConvertData
@@ -61,8 +62,8 @@ class OsmoData(QtGui.QMainWindow): #pylint: disable-msg=R0904
     def openfile(self):
         global filenames
         #Here we will open the directory with the datafiles
-        filenames, _ = QtGui.QFileDialog.getOpenFileNames(
-                        dir=userdir, filter="CSV Files (*.csv)")
+        filenames = QtGui.QFileDialog.getOpenFileNames(
+                        directory=userdir, filter="CSV Files (*.csv)")
         fileselect = FileSelectWidget(self)
         self.setCentralWidget(fileselect)
 
@@ -153,9 +154,10 @@ def convert():
             pass
         else:
             permeance.append(ConvertData.det_average(item[0].text(), item[1].currentText()))
-        
-    savefile, _ = QtGui.QFileDialog.getSaveFileName(filter="CSV Files (*.csv)",
-                                                    dir=os.path.dirname(filenames[0]))
+    
+
+    savefile = QtGui.QFileDialog.getSaveFileName(filter="CSV Files (*.csv)",
+                                                    directory=os.path.dirname(filenames[0]))
     df = pd.DataFrame(permeance,
                       columns=['D_k', 'Gas', 'Permeance (mol m-2 s-1 Pa-1)', 'Temp (C)', 'Flow (ml/min) AIR', 'Pdiff (bar)','T_band']).sort(['T_band','D_k'])
     df.to_csv(savefile, index=False, sep=";")

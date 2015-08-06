@@ -9,7 +9,6 @@ Inspector software to an average permeance
 import matplotlib
 ## Make sure that matplotlib only uses a qt4 backend
 matplotlib.use('Qt4Agg')
-matplotlib.rcParams['backend.qt4'] = 'PySide'
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -44,11 +43,12 @@ def det_average(fname, gas):
 
     xlow = int(xlow.round())
     xhigh = int(xhigh.round())
+
     average = datacrop['Perm'].loc[xlow:xhigh].mean()
     temp = datacrop['Tcell'].loc[xlow:xhigh].mean()
     flow = datacrop['Fraw'].loc[xlow:xhigh].mean()
     pdiff = datacrop['Pdiff'].loc[xlow:xhigh].mean()
-    tband = np.round(datacrop['Tband'].loc[xlow:xhigh].mean().round())
+    tband = np.round(datacrop['Tband'].loc[xlow:xhigh].mean())
     plt.close()
     return diameter, gas, average*1E-9, temp, flow, pdiff, tband
 
