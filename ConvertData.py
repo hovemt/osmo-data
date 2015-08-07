@@ -48,7 +48,7 @@ def det_average(fname, gas):
     temp = datacrop['Tcell'].loc[xlow:xhigh].mean()
     flow = datacrop['Fraw'].loc[xlow:xhigh].mean()
     pdiff = datacrop['Pdiff'].loc[xlow:xhigh].mean()
-    tband = np.round(datacrop['Tband'].loc[xlow:xhigh].mean().round())
+    tband = np.round(datacrop['Tband'].loc[xlow:xhigh].mean())
     plt.close()
     return diameter, gas, average*1E-9, temp, flow, pdiff, tband
 
