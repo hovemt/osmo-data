@@ -6,7 +6,7 @@ the average permeance per gas
 @author: hovem
 """
 import sys
-from PySide import QtGui
+from PyQt4 import QtGui
 import pandas as pd
 import os.path
 import ConvertData
@@ -14,7 +14,7 @@ import ConvertData
 
 userdir = os.path.expanduser("~")
 filenames = list()
-filewidget = [] 
+filewidget = []
 
 class OsmoData(QtGui.QMainWindow): #pylint: disable-msg=R0904
 
@@ -61,8 +61,8 @@ class OsmoData(QtGui.QMainWindow): #pylint: disable-msg=R0904
     def openfile(self):
         global filenames
         #Here we will open the directory with the datafiles
-        filenames, _ = QtGui.QFileDialog.getOpenFileNames(
-                        dir=userdir, filter="CSV Files (*.csv)")
+        filenames = QtGui.QFileDialog.getOpenFileNames(
+                        directory=userdir, filter="CSV Files (*.csv)")
         fileselect = FileSelectWidget(self)
         self.setCentralWidget(fileselect)
 
@@ -95,7 +95,6 @@ class FileSelectWidget(QtGui.QWidget): #pylint: disable-msg=R0904
         self.setMinimumWidth(500)
         convertbutton = QtGui.QPushButton('convert')
         convertbutton.clicked.connect(convert)
-        
         widget = QtGui.QWidget()
 
         self.filebox = QtGui.QGridLayout()
@@ -104,12 +103,12 @@ class FileSelectWidget(QtGui.QWidget): #pylint: disable-msg=R0904
 
         #hbox = QtGui.QHBoxLayout()
         #hbox.addLayout(self.filebox)
-        widget.setLayout(self.filebox)        
-        
+        widget.setLayout(self.filebox)
+
         scroll = QtGui.QScrollArea()
         scroll.setWidgetResizable(True)
         scroll.setWidget(widget)
-        
+
         hbox2 = QtGui.QHBoxLayout()
         hbox2.addStretch(1)
         hbox2.addWidget(convertbutton)
@@ -118,26 +117,26 @@ class FileSelectWidget(QtGui.QWidget): #pylint: disable-msg=R0904
         vbox.addWidget(scroll)
         vbox.addStretch(1)
         vbox.addLayout(hbox2)
-        
+
         for i in filenames:
             self.AddWidget(i)
 
         self.setLayout(vbox)
-        
+
     def AddWidget(self,filename):
         row = self.filebox.rowCount()
-        
+
         lineedit = QtGui.QLineEdit(filename)
-        
+
         gasselect = QtGui.QComboBox()
         gasselect.addItems(["---","Helium","Nitrogen","Methane","Hydrogen","Carbon dioxide"])
-        
+
         #TODO: Now we check for gas based on filename, extract gas from data.
         if filename.find('__') >= 0:
             num = int(filename[filename.rfind('__')+2:filename.rfind('.')])-1
             index = num % 6
             gasselect.setCurrentIndex(index)
-        
+
         filewidget.append([lineedit, gasselect])
         self.filebox.addWidget(lineedit, row, 0)
         self.filebox.addWidget(gasselect, row, 1)
@@ -153,9 +152,9 @@ def convert():
             pass
         else:
             permeance.append(ConvertData.det_average(item[0].text(), item[1].currentText()))
-        
-    savefile, _ = QtGui.QFileDialog.getSaveFileName(filter="CSV Files (*.csv)",
-                                                    dir=os.path.dirname(filenames[0]))
+
+    savefile = QtGui.QFileDialog.getSaveFileName(filter="CSV Files (*.csv)",
+                                                    directory=os.path.dirname(filenames[0]))
     df = pd.DataFrame(permeance,
                       columns=['D_k', 'Gas', 'Permeance (mol m-2 s-1 Pa-1)', 'Temp (C)', 'Flow (ml/min) AIR', 'Pdiff (bar)','T_band']).sort(['T_band','D_k'])
     df.to_csv(savefile, index=False, sep=";")
