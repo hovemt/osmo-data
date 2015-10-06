@@ -4,11 +4,11 @@ import matplotlib
 
 # Dependencies are automatically detected, but it might need
 # fine tuning.
-buildOptions = dict(packages = ["matplotlib.backends.backend_qt4agg"], 
+buildOptions = dict(packages = ["matplotlib.backends.backend_qt4agg"],
 					excludes = ["tkinter",
 								"scipy",
 								"PyQt4",
-								#"numpy.linalg"								
+								#"numpy.linalg"
 								],
 					include_files = [
 									#(matplotlib.get_data_path(),"mpl-data"),
