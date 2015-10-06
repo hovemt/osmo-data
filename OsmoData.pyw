@@ -6,7 +6,6 @@ the average permeance per gas
 @author: hovem
 """
 import sys
-# from PySide import QtGui
 from PyQt4 import QtGui
 import pandas as pd
 import os.path
@@ -96,7 +95,6 @@ class FileSelectWidget(QtGui.QWidget): #pylint: disable-msg=R0904
         self.setMinimumWidth(500)
         convertbutton = QtGui.QPushButton('convert')
         convertbutton.clicked.connect(convert)
-
         widget = QtGui.QWidget()
 
         self.filebox = QtGui.QGridLayout()
@@ -154,7 +152,6 @@ def convert():
             pass
         else:
             permeance.append(ConvertData.det_average(item[0].text(), item[1].currentText()))
-
 
     savefile = QtGui.QFileDialog.getSaveFileName(filter="CSV Files (*.csv)",
                                                     directory=os.path.dirname(filenames[0]))
