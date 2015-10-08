@@ -1,3 +1,4 @@
+#! /usr/bin/env python
 # -*- coding: utf-8 -*-
 """
 OsmoData is a tool to convert a number of files to a single csv files with
