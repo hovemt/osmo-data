@@ -14,8 +14,6 @@ matplotlib.use('Qt4Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import warnings
-warnings.simplefilter("ignore")
 import os.path
 
 
@@ -31,7 +29,7 @@ HEADERS = ['systime', 'exptime', 'status', 'A', 'B', 'F1', 'F2', 'F3',
 GASES = ["Helium", "Nitrogen", "Methane", "Hydrogen", "Carbon dioxide"]
 SIZES = [2.6, 3.64, 3.8, 2.89, 3.3]
 
-class OsmoData(QtGui.QMainWindow): #pylint: disable-msg=R0904
+class OsmoData(QtGui.QMainWindow):
 
     def __init__(self, parent=None):
         super(OsmoData, self).__init__(parent)
@@ -82,7 +80,7 @@ class OsmoData(QtGui.QMainWindow): #pylint: disable-msg=R0904
         self.setCentralWidget(fileselect)
 
 
-class MainWidget(QtGui.QWidget): #pylint: disable-msg=R0904
+class MainWidget(QtGui.QWidget):
 
     def __init__(self, parent=None):
         super(MainWidget, self).__init__(parent)
@@ -100,7 +98,7 @@ class MainWidget(QtGui.QWidget): #pylint: disable-msg=R0904
 
         self.setLayout(vbox)
 
-class FileSelectWidget(QtGui.QWidget): #pylint: disable-msg=R0904
+class FileSelectWidget(QtGui.QWidget):
     global filenames
     global filewidget
 
@@ -115,9 +113,6 @@ class FileSelectWidget(QtGui.QWidget): #pylint: disable-msg=R0904
         self.filebox = QtGui.QGridLayout()
         self.filebox.addWidget(QtGui.QLabel("Filename"),0,0)
         self.filebox.addWidget(QtGui.QLabel("Gas"),0,1)
-
-        #hbox = QtGui.QHBoxLayout()
-        #hbox.addLayout(self.filebox)
         widget.setLayout(self.filebox)
 
         scroll = QtGui.QScrollArea()
@@ -139,6 +134,23 @@ class FileSelectWidget(QtGui.QWidget): #pylint: disable-msg=R0904
         self.setLayout(vbox)
 
     def AddWidget(self,filename):
+        """
+        Adds a textbox and a dropdown for each filename. The dropdown contains
+        the gas that should be passed to det_average.
+
+        The gases are now selected based on the measurement program:
+        001: heating
+        002: Helium
+        003: Nitrogen
+        004: Methane
+        005: Hydrogen
+        006: Carbon dioxide
+
+        Extra temperatures follow the same pattern, so by using a modulus we can
+        extract which gas is used.
+
+        In the future the gas should be somehow incorporated into the datafile
+        """
         row = self.filebox.rowCount()
 
         lineedit = QtGui.QLineEdit(filename)
@@ -158,7 +170,14 @@ class FileSelectWidget(QtGui.QWidget): #pylint: disable-msg=R0904
 
 def det_average(fname, gas):
     """"
-    This function plots permeance vs time to determine the average permeance
+    This function returns the average permeance for the specified filename and
+    gas. It will plot the permeance versus time, after which two points must be
+    selected to calculate the average between those points.
+
+    Input: filename (str), gas (str)
+    Ouput: diameter (float), gas (str), permeance (float), temp (float),
+            gas flow (float), pdiff (float), tband (float)
+
     """
     #TODO: select gas from status
     diameter = SIZES[GASES.index(gas)]
@@ -186,6 +205,13 @@ def det_average(fname, gas):
 
 
 def convert():
+    """
+    Convert is called to iterate over the filenames in FileSelectWidget. For
+    each filename it calls det_average with the appropiate gas.
+
+    After the iteration it saves the array to which all data is written to a
+    CSV file, which is saved on the specified place.
+    """
     global filenames
     global ex
     global filewidget
@@ -200,7 +226,7 @@ def convert():
     savefile = QtGui.QFileDialog.getSaveFileName(filter="CSV Files (*.csv)",
                                                     directory=os.path.dirname(filenames[0]))
     df = pd.DataFrame(permeance,
-                      columns=['D_k', 'Gas', 'Permeance (mol m-2 s-1 Pa-1)', 'Temp (C)', 'Flow (ml/min) AIR', 'Pdiff (bar)','T_band']).sort(['T_band','D_k'])
+                      columns=['D_k', 'Gas', 'Permeance (mol m-2 s-1 Pa-1)', 'Temp (C)', 'Flow (ml/min) AIR', 'Pdiff (bar)','T_band']).sort_values(['T_band','D_k'])
     df.to_csv(savefile, index=False, sep=";")
     #Change back to main window after conversion
     mainmenu = MainWidget()
