@@ -7,7 +7,7 @@ the average permeance per gas
 @author: hovem
 """
 import sys
-from PyQt4 import QtGui
+from PyQt4 import QtCore, QtGui
 import matplotlib
 ## Make sure that matplotlib only uses a qt4 backend
 matplotlib.use('Qt4Agg')
@@ -20,6 +20,7 @@ import os.path
 userdir = os.path.expanduser("~")
 filenames = list()
 filewidget = []
+autoconvert = False
 
 HEADERS = ['systime', 'exptime', 'status', 'A', 'B', 'F1', 'F2', 'F3',
            'F4', 'P1', 'P2', 'P3', 'C', 'T1', 'T2', 'Tband', 'Tcell',
@@ -108,6 +109,10 @@ class FileSelectWidget(QtGui.QWidget):
         self.setMinimumWidth(500)
         convertbutton = QtGui.QPushButton('convert')
         convertbutton.clicked.connect(convert)
+        cb = QtGui.QCheckBox('Enable autoconversion')
+        cb.setChecked(autoconvert)
+        cb.stateChanged.connect(self.ChangeConvert)
+
         widget = QtGui.QWidget()
 
         self.filebox = QtGui.QGridLayout()
@@ -120,6 +125,7 @@ class FileSelectWidget(QtGui.QWidget):
         scroll.setWidget(widget)
 
         hbox2 = QtGui.QHBoxLayout()
+        hbox2.addWidget(cb)
         hbox2.addStretch(1)
         hbox2.addWidget(convertbutton)
 
@@ -168,6 +174,16 @@ class FileSelectWidget(QtGui.QWidget):
         self.filebox.addWidget(lineedit, row, 0)
         self.filebox.addWidget(gasselect, row, 1)
 
+    def ChangeConvert(self, state):
+        global autoconvert
+
+        if state == QtCore.Qt.Checked:
+            #print("Setting autoconvert to true")
+            autoconvert = True
+        else:
+            # print("Setting autoconvert to false")
+            autoconvert = False
+
 def det_average(fname, gas):
     """"
     This function returns the average permeance for the specified filename and
@@ -202,6 +218,34 @@ def det_average(fname, gas):
     plt.close()
     return diameter, gas, average*1E-9, temp, flow, pdiff, tband
 
+def det_stable_value(fname, gas):
+    """
+    Determine a stable value based on a moving average of 300 points. The average
+    that belongs to the minimum variance is used for the calculation.
+    Input: filename (str), gas (str)
+    Ouput: diameter (float), gas (str), permeance (float), temp (float),
+            gas flow (float), pdiff (float), tband (float)
+
+    """
+    #TODO: select gas from status
+    diameter = SIZES[GASES.index(gas)]
+    data = pd.read_csv(fname, delimiter='\t', header=0, names=HEADERS)
+    #TODO: do something with status, since gas will be added in future
+    datacrop = data[data.status == "Measuring"]
+
+    # Create a temporary dataframe to calculate the minimum
+    permdata = pd.DataFrame({
+		'perm' : datacrop['Perm'],
+		'avg' : pd.rolling_mean(datacrop['Perm'], 300),
+		'vari' : pd.rolling_var(datacrop['Perm'], 300)
+		})
+    minvalue = permdata[permdata['vari'] == permdata['vari'].min()].index.values[0]
+    average = datacrop['Perm'].loc[minvalue]
+    temp = datacrop['Tcell'].loc[minvalue]
+    flow = datacrop['Fraw'].loc[minvalue]
+    pdiff = datacrop['Pdiff'].loc[minvalue]
+    tband = np.round(datacrop['Tband'].loc[minvalue])
+    return diameter, gas, average*1E-9, temp, flow, pdiff, tband
 
 
 def convert():
@@ -215,13 +259,19 @@ def convert():
     global filenames
     global ex
     global filewidget
+    global autoconvert
     permeance = []
+
 
     for item in filewidget:
         if item[1].currentText() == '---':
             pass
         else:
-            permeance.append(det_average(item[0].text(), item[1].currentText()))
+            #print(autoconvert)
+            if autoconvert:
+                permeance.append(det_stable_value(item[0].text(), item[1].currentText()))
+            else:
+                permeance.append(det_average(item[0].text(), item[1].currentText()))
 
     savefile = QtGui.QFileDialog.getSaveFileName(filter="CSV Files (*.csv)",
                                                     directory=os.path.dirname(filenames[0]))
