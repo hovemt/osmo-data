@@ -239,8 +239,10 @@ def det_stable_value(fname, gas):
 		'avg' : pd.rolling_mean(datacrop['Perm'], 300),
 		'vari' : pd.rolling_var(datacrop['Perm'], 300)
 		})
-    minvalue = permdata[permdata['vari'] == permdata['vari'].min()].index.values[0]
-    average = datacrop['Perm'].loc[minvalue]
+    mindata = permdata[permdata['vari'] == permdata['vari'].min()]
+    minvalue = mindata.index.values[0]
+    
+    average = mindata['perm'][0]
     temp = datacrop['Tcell'].loc[minvalue]
     flow = datacrop['Fraw'].loc[minvalue]
     pdiff = datacrop['Pdiff'].loc[minvalue]
