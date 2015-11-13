@@ -233,8 +233,14 @@ def convert():
         else:
             permeance.append(det_average(item[0].text(), item[1].currentText()))
 
+    #TODO: put the results to a screen before saving.
+
     savefile = QtGui.QFileDialog.getSaveFileName(filter="CSV Files (*.csv)",
                                                     directory=os.path.dirname(filenames[0]))
+
+    if not savefile:
+        return
+
     df = pd.DataFrame(permeance,
                       columns=['D_k', 'Gas', 'Permeance (mol m-2 s-1 Pa-1)', 'Temp (C)', 'Flow (ml/min) AIR', 'Pdiff (bar)','T_band']).sort_values(['T_band','D_k'])
     df.to_csv(savefile, index=False, sep=";")
