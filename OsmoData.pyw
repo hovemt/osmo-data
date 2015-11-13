@@ -72,10 +72,20 @@ class OsmoData(QtGui.QMainWindow):
             event.ignore()
 
     def openfile(self):
-        global filenames
         #Here we will open the directory with the datafiles
-        filenames = QtGui.QFileDialog.getOpenFileNames(
+        fns = QtGui.QFileDialog.getOpenFileNames(
                         directory=userdir, filter="CSV Files (*.csv)")
+
+        if not fns:
+            return
+
+        self.loadfiles(fns)
+
+
+    def loadfiles(self, fns):
+        global filenames
+
+        filenames = fns
         fileselect = FileSelectWidget(self)
         self.setCentralWidget(fileselect)
 
