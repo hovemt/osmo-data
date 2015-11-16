@@ -15,7 +15,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import os.path
-
+# without ignoring warnings some trouble with selecting data
+import warnings
+warnings.simplefilter("ignore")
 
 userdir = os.path.expanduser("~")
 filenames = list()
