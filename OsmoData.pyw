@@ -205,7 +205,6 @@ def det_average(fname, gas):
             gas flow (float), pdiff (float), tband (float)
 
     """
-    #TODO: select gas from status
     diameter = SIZES[GASES.index(gas)]
     data = pd.read_csv(fname, delimiter='\t', header=0, names=HEADERS)
     datacrop = data[data['status'].str.startswith("Measuring")] #pylint: disable-msg=E1103
@@ -236,11 +235,9 @@ def det_stable_value(fname, gas):
             gas flow (float), pdiff (float), tband (float)
 
     """
-    #TODO: select gas from status
     diameter = SIZES[GASES.index(gas)]
     data = pd.read_csv(fname, delimiter='\t', header=0, names=HEADERS)
-    #TODO: do something with status, since gas will be added in future
-    datacrop = data[data.status == "Measuring"]
+    datacrop = data[data['status'].str.startswith("Measuring")]
 
     # Create a temporary dataframe to calculate the minimum
     permdata = pd.DataFrame({
@@ -250,7 +247,7 @@ def det_stable_value(fname, gas):
 		})
     mindata = permdata[permdata['vari'] == permdata['vari'].min()]
     minvalue = mindata.index.values[0]
-    
+
     average = mindata['perm'][0]
     temp = datacrop['Tcell'].loc[minvalue]
     flow = datacrop['Fraw'].loc[minvalue]
