@@ -204,10 +204,10 @@ def findGas(filename):
         # check if there is a gas name for backwards compatibility
         comment = found.split('\t')[2].split(' ')
         if len(comment) > 1:
-            return comment[2]
+            return ' '.join(comment[2:])
         else:
             return ''
-    
+
 
 def det_average(fname, gas):
     """"
