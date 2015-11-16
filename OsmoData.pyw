@@ -208,8 +208,7 @@ def det_average(fname, gas):
     #TODO: select gas from status
     diameter = SIZES[GASES.index(gas)]
     data = pd.read_csv(fname, delimiter='\t', header=0, names=HEADERS)
-    #TODO: do something with status, since gas will be added in future
-    datacrop = data[data.status == "Measuring"] #pylint: disable-msg=E1103
+    datacrop = data[data['status'].str.startswith("Measuring")] #pylint: disable-msg=E1103
     datacrop['Perm'].plot()
     values = plt.ginput(2)
 
