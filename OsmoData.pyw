@@ -168,15 +168,44 @@ class FileSelectWidget(QtGui.QWidget):
         gasselect = QtGui.QComboBox()
         gasselect.addItems(["---","Helium","Nitrogen","Methane","Hydrogen","Carbon dioxide"])
 
-        #TODO: Now we check for gas based on filename, extract gas from data.
-        if filename.find('__') >= 0:
-            num = int(filename[filename.rfind('__')+2:filename.rfind('.')])-1
-            index = num % 6
-            gasselect.setCurrentIndex(index)
+        gas = findGas(filename)
+
+        if gas == '':
+            #TODO: Now we check for gas based on filename, extract gas from data.
+            if filename.find('__') >= 0:
+                num = int(filename[filename.rfind('__')+2:filename.rfind('.')])-1
+                index = num % 6
+                gasselect.setCurrentIndex(index)
+        else:
+            gasselect.setCurrentIndex(GASES.index(gas)+1)
 
         filewidget.append([lineedit, gasselect])
         self.filebox.addWidget(lineedit, row, 0)
         self.filebox.addWidget(gasselect, row, 1)
+
+def findGas(filename):
+    """
+    Find gas from the status message in filename. The format in
+    the status comment is "Measuring - Gasname"
+    """
+    found = ''
+
+    with open(filename, 'r') as inF:
+        for line in inF:
+            if "Measuring" in line:
+                found = line
+                break #Only need first occurence
+
+    if found == '':
+        return ''
+    else:
+        # check if there is a gas name for backwards compatibility
+        comment = found.split('\t')[2].split(' ')
+        if len(comment) > 1:
+            return comment[2]
+        else:
+            return ''
+    
 
 def det_average(fname, gas):
     """"
